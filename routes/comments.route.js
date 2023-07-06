@@ -25,4 +25,20 @@ router.post('/:postId', authMiddleware, async (req, res) => {
   }
 });
 
+router.get('/:postId', async (req, res) => {
+  const { postId } = req.params;
+
+  try {
+    const post = await Posts.findOne({ where: { postId } });
+    if (!post) {
+      return res.status(404).json({ errorMessage: '게시글 조회에 실패하였습니다.' });
+    }
+
+    const comments = await Comments.findAll({ where: { PostId: postId } });
+    res.status(200).json({ comments });
+  } catch (error) {
+    res.status(400).json({ errorMessage: '댓글 조회에 실패하였습니다.' });
+  }
+});
+
 module.exports = router;

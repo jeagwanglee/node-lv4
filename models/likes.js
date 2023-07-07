@@ -3,7 +3,7 @@ const { Model } = require('sequelize');
 const Sequelize = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-  class Posts extends Model {
+  class Likes extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -12,52 +12,39 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
 
-      // 1. Posts 모델에서
       this.belongsTo(models.Users, {
-        // 2. Users 모델에게 N:1 관계 설정을 합니다.
-        targetKey: 'userId', // 3. Users 모델의 userId 컬럼을
-        foreignKey: 'UserId', // 4. Posts 모델의 UserId 컬럼과 연결합니다.
+        foreignKey: 'UserId',
       });
-
-      this.hasMany(models.Comments, {
-        sourceKey: 'postId',
-        foreignKey: 'PostId',
-      });
-
-      this.hasMany(models.Likes, {
-        sourceKey: 'postId',
+      this.belongsTo(models.Posts, {
         foreignKey: 'PostId',
       });
     }
   }
-  Posts.init(
+  Likes.init(
     {
-      postId: {
+      likeId: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
       UserId: {
-        allowNull: false, // NOT NULL
+        allowNull: false,
         type: Sequelize.INTEGER,
         references: {
           model: 'Users', // Users 모델을 참조합니다.
           key: 'userId', // Users 모델의 userId를 참조합니다.
         },
-        onDelete: 'CASCADE', // 만약 Users 모델의 userId가 삭제되면, Posts 모델의 데이터가 삭제됩니다.
+        onDelete: 'CASCADE', // 만약 Users 모델의 userId가 삭제되면, Comments 모델의 데이터가 삭제됩니다.
       },
-      nickname: {
+      PostId: {
         allowNull: false,
-        type: Sequelize.STRING,
-      },
-      title: {
-        allowNull: false,
-        type: Sequelize.STRING,
-      },
-      content: {
-        allowNull: false,
-        type: Sequelize.STRING,
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'Posts', // Posts 모델을 참조합니다.
+          key: 'postId', // Posts 모델의 postId를 참조합니다.
+        },
+        onDelete: 'CASCADE', // 만약 Posts 모델의 postId가 삭제되면, Comments 모델의 데이터가 삭제됩니다.
       },
       createdAt: {
         allowNull: false,
@@ -72,8 +59,8 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: 'Posts',
+      modelName: 'Likes',
     }
   );
-  return Posts;
+  return Likes;
 };

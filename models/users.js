@@ -25,8 +25,8 @@ module.exports = (sequelize, DataTypes) => {
       });
 
       this.hasMany(models.Likes, {
-        sourceKey: 'postId',
-        foreignKey: 'PostId',
+        sourceKey: 'userId',
+        foreignKey: 'UserId',
       });
     }
   }

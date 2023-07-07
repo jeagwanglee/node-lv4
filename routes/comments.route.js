@@ -78,4 +78,35 @@ router.put('/:postId/:commentId', authMiddleware, async (req, res) => {
   }
 });
 
+router.delete('/:postId/:commentId', authMiddleware, async (req, res) => {
+  const { userId } = res.locals.user;
+  const { postId, commentId } = req.params;
+
+  try {
+    const post = await Posts.findOne({ where: { postId } });
+    const targetComment = await Comments.findOne({ where: { commentId } });
+
+    if (!post) {
+      return res.status(404).json({ errorMessage: '게시글 조회에 실패하였습니다.' });
+    }
+
+    if (!targetComment) {
+      return res.status(404).json({ errorMessage: '댓글 조회에 실패하였습니다.' });
+    }
+
+    if (userId !== targetComment.UserId) {
+      return res.status(403).json({ errorMessage: '댓글 삭제 권한이 없습니다.' });
+    }
+  } catch (error) {
+    res.status(400).json({ errorMessage: '댓글 삭제에 실패하였습니다.' });
+  }
+
+  try {
+    await Comments.destroy({ where: { commentId } });
+    res.status(200).json({ message: '댓글을 삭제하였습니다.' });
+  } catch (error) {
+    res.status(400).json({ errorMessage: '댓글 삭제가 정상적으로 처리되지 않았습니다.' });
+  }
+});
+
 module.exports = router;

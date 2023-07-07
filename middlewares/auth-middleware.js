@@ -4,7 +4,6 @@ const { Users } = require('../models');
 // 사용자 인증 미들웨어
 module.exports = async (req, res, next) => {
   const { Authorization } = req.cookies;
-  console.log("🚀 ~ file: auth-middleware.js:7 ~ module.exports= ~ Authorization:", Authorization)
   const [authType, authToken] = (Authorization ?? '').split(' ');
 
   if (authType !== 'Bearer' || !authToken) {
@@ -14,7 +13,6 @@ module.exports = async (req, res, next) => {
   try {
     const { userId } = jwt.verify(authToken, 'secret-key');
     const user = await Users.findOne({ where: { userId } });
-    console.log('🚀 ~ file: auth-middleware.js:16 ~ module.exports= ~ user:', user);
     res.locals.user = user;
     next();
   } catch (error) {

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { Posts } = require('../models');
+const { Posts, Likes } = require('../models');
 const authMiddleware = require('../middlewares/auth-middleware.js');
 
 //  1. 게시글 작성 POST
@@ -40,7 +40,14 @@ router.get('/', async (req, res) => {
       attributes: ['postId', 'UserId', 'nickname', 'title', 'createdAt', 'updatedAt'],
       order: [['createdAt', 'DESC']],
     });
-    return res.status(200).json({ posts });
+    // 좋아요 개수 조회
+    const result = posts.map(async (post) => {
+      const likes = await Likes.findAll({ where: { PostId: post.postId } });
+      post.dataValues.likes = likes.length;
+      return post;
+    });
+    const resolvedResult = await Promise.all(result);
+    return res.status(200).json({ posts: resolvedResult });
   } catch (error) {
     console.error(`Error: ${error.message}`);
     return res.status(400).json({
@@ -134,3 +141,14 @@ router.delete('/:postId', authMiddleware, async (req, res) => {
 });
 
 module.exports = router;
+
+// const { postId, UserId, nickname, title, createdAt, updatedAt } = post;
+// return {
+//   postId,
+//   UserId,
+//   nickname,
+//   title,
+//   likesCount: likes.length,
+//   createdAt,
+//   updatedAt,
+// };

@@ -15,7 +15,7 @@ router.post('/:postId', authMiddleware, async (req, res) => {
     }
 
     if (!comment) {
-      return res.status(412).json({ errorMessage: '데이터 형식이 올바르지 않습니다.' });
+      return res.status(412).json({ errorMessage: '댓글 내용을 입력해주세요.' });
     }
 
     await Comments.create({ UserId: userId, PostId: postId, comment, nickname });

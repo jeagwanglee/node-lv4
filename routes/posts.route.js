@@ -65,6 +65,8 @@ router.get('/:postId', async (req, res) => {
       attributes: ['postId', 'UserId', 'nickname', 'title', 'content', 'createdAt', 'updatedAt'],
       where: { postId },
     });
+    const likes = await Likes.findAll({ where: { PostId: postId } });
+    post.dataValues.likes = likes.length;
 
     if (!post) {
       res.status(400).json({ errorMessage: '게시글이 존재하지 않습니다.' });

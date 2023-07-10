@@ -25,6 +25,7 @@ router.post('/:postId', authMiddleware, async (req, res) => {
   }
 });
 
+//댓글 목록 조회
 router.get('/:postId', async (req, res) => {
   const { postId } = req.params;
 
@@ -35,7 +36,7 @@ router.get('/:postId', async (req, res) => {
       return res.status(404).json({ errorMessage: '게시글 조회에 실패하였습니다.' });
     }
 
-    const comments = await Comments.findAll({ where: { PostId: postId } });
+    const comments = await Comments.findAll({ where: { PostId: postId }, order: [['createdAt', 'DESC']] });
     res.status(200).json({ comments });
   } catch (error) {
     res.status(400).json({ errorMessage: '댓글 조회에 실패하였습니다.' });

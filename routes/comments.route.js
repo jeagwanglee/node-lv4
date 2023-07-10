@@ -53,7 +53,7 @@ router.put('/:postId/:commentId', authMiddleware, async (req, res) => {
     const targetComment = await Comments.findOne({ where: { commentId } });
 
     if (!comment) {
-      return res.status(412).json({ errorMessage: '데이터 형식이 올바르지 않습니다.' });
+      return res.status(412).json({ errorMessage: '댓글 내용을 입력해주세요.' });
     }
 
     if (!post) {

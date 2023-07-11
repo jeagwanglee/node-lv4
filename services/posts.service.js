@@ -9,8 +9,7 @@ class PostsService {
 
   findAllPosts = async () => {
     const result = await this.postsRepository.findAllPosts();
-    const resolvedResult = await Promise.all(result);
-    return resolvedResult;
+    return result;
   };
 
   getOnePost = async (postId) => {

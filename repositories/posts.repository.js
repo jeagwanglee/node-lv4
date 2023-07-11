@@ -17,7 +17,8 @@ class PostsRepository {
       return post;
     });
 
-    return result;
+    const resolvedResult = await Promise.all(result);
+    return resolvedResult;
   };
 
   getOnePost = async (postId) => {

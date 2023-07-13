@@ -8,20 +8,57 @@ class PostsService {
   };
 
   findAllPosts = async () => {
-    const result = await this.postsRepository.findAllPosts();
-    return result;
+    try {
+      const posts = await this.postsRepository.findAllPosts();
+      const resolvedPosts = await Promise.all(posts);
+      return resolvedPosts;
+    } catch (error) {
+      throw new Error('게시글 조회에 실패했습니다.');
+    }
   };
 
   getOnePost = async (postId) => {
-    const post = await this.postsRepository.getOnePost(postId);
-    return post;
+    try {
+      const post = await this.postsRepository.getOnePost(postId);
+      if (!post) {
+        return { status: 404, data: { errorMessage: '게시글 조회에 실패하였습니다.' } };
+      }
+      return { post };
+    } catch (error) {
+      throw new Error('게시글 조회에 실패했습니다.');
+    }
   };
 
   updatePost = async (title, content, postId) => {
-    await this.postsRepository.updatePost(title, content, postId);
+    try {
+      const post = await this.postsRepository.getOnePost(postId);
+
+      if (!title || !content) {
+        return { status: 412, data: { errorMessage: '데이터 형식이 올바르지 않습니다.' } };
+      }
+
+      if (!post) {
+        return { status: 404, data: { errorMessage: '게시글 조회에 실패하였습니다.' } };
+      }
+      await this.postsRepository.updatePost(title, content, postId);
+      return { status: 200, data: { errorMessage: '게시글을 수정하였습니다.' } };
+    } catch (error) {
+      throw new Error('게시글 수정에 실패했습니다.');
+    }
   };
+
   deletePost = async (postId) => {
-    await this.postsRepository.deletePost(postId);
+    try {
+      const post = await this.postsRepository.getOnePost(postId);
+
+      if (!post) {
+        return { status: 404, data: { errorMessage: '게시글 조회에 실패하였습니다.' } };
+      }
+      await this.postsRepository.deletePost(postId);
+      return { status: 200, data: { errorMessage: '게시글을 삭제하였습니다.' } };
+    } catch (error) {
+      throw new Error('게시글 삭제에 실패했습니다.');
+    }
   };
 }
 

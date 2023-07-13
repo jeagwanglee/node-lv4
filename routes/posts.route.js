@@ -6,7 +6,7 @@ const PostsController = require('../controllers/posts.controller');
 const postsController = new PostsController();
 
 router.post('/', authMiddleware, postsController.createPost);
-router.get('/', postsController.getPosts);
+router.get('/', postsController.getAllPosts);
 router.get('/:postId', postsController.getOnePost);
 router.put('/:postId', authMiddleware, postsController.updatePost);
 router.delete('/:postId', authMiddleware, postsController.deletePost);

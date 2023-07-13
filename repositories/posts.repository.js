@@ -16,9 +16,7 @@ class PostsRepository {
       post.dataValues.likes = likes.length;
       return post;
     });
-
-    const resolvedResult = await Promise.all(result);
-    return resolvedResult;
+    return result;
   };
 
   getOnePost = async (postId) => {

@@ -53,8 +53,7 @@ class CommentsService {
       if (!targetComment) {
         return { status: 404, data: { errorMessage: '댓글 조회에 실패하였습니다.' } };
       }
-      console.log(`userId: ${userId}`);
-      console.log(`targetComment.UserId: ${targetComment.UserId}`);
+
       if (userId !== targetComment.UserId) {
         return { status: 403, data: { errorMessage: '댓글 수정 권한이 없습니다.' } };
       }

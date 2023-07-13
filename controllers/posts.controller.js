@@ -37,10 +37,6 @@ class PostsController {
 
       res.status(200).json({ post });
     } catch (error) {
-      console.log('🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴');
-      console.log('/컨트롤러');
-      console.log(error);
-      console.log('🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴');
       res.status(400).json(error.message);
     }
   };

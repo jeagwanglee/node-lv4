@@ -25,7 +25,7 @@ class PostsController {
     } catch (e) {
       if (e.errorCode) return res.status(e.errorCode).json(e.message);
 
-      res.status(500).json({ message: '게시글 조회에 실패했습니다.' });
+      res.status(500).json({ message: '게시글 목록 조회에 실패했습니다.' });
     }
   };
 

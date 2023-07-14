@@ -1,4 +1,5 @@
-const { Posts, Likes } = require('../models');
+const { Users, Posts, Likes } = require('../models');
+const sequelize = require('sequelize');
 
 class LikesRepository {
   findOneLike = async (UserId, PostId) => {
@@ -17,21 +18,26 @@ class LikesRepository {
     const likes = await Likes.findAll({ where: { Id } });
   };
 
-  findLikedPosts = async (userId) => {
-    const likedPostsList = await Likes.findAll({ where: { UserId: userId } });
-
-    const likedPosts = likedPostsList.map(async (likedPost) => {
-      const PostId = likedPost.PostId;
-      const post = await Posts.findOne({
-        attributes: ['postId', 'UserId', 'nickname', 'title', 'createdAt', 'updatedAt'],
-        order: [['createdAt', 'DESC']],
-        where: { postId: PostId },
-      });
-      const likes = await Likes.findAll({ where: { PostId } });
-      post.dataValues.likes = likes.length;
-      return post;
+  findLikedPosts = async (UserId) => {
+    const posts = await Likes.findAll({
+      where: { UserId },
+      attributes: ['PostId'],
+      include: [
+        {
+          model: Posts,
+          attributes: [
+            'UserId',
+            'nickname',
+            'title',
+            'createdAt',
+            'updatedAt',
+            [sequelize.literal('(SELECT COUNT(*) FROM Likes WHERE Likes.PostId = Post.postId)'), 'likes'],
+          ],
+        },
+      ],
+      order: [['createdAt', 'DESC']],
     });
-    return likedPosts;
+    return posts;
   };
 }
 module.exports = LikesRepository;

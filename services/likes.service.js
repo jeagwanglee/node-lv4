@@ -29,14 +29,24 @@ class LikesService {
 
   getLikedPosts = async (userId) => {
     try {
-      const likedPosts = await this.likesRepository.findLikedPosts(userId);
-
-      const resolvedPosts = await Promise.all(likedPosts);
-      // 게시글을 좋아요 개수가 많은 순으로 정렬
-      resolvedPosts.sort((a, b) => {
-        return b.dataValues.likes - a.dataValues.likes;
+      const result = await this.likesRepository.findLikedPosts(userId);
+      const likedPosts = result.map((item) => {
+        const { UserId, nickname, title, createdAt, updatedAt, dataValues } = item.Post;
+        return {
+          postId: item.PostId,
+          UserId,
+          nickname,
+          title,
+          createdAt,
+          updatedAt,
+          likes: dataValues.likes, //datavalues로 접근해야 함
+        };
       });
-      return resolvedPosts;
+      // 게시글을 좋아요 개수가 많은 순으로 정렬
+      likedPosts.sort((a, b) => {
+        return b.likes - a.likes;
+      });
+      return likedPosts;
     } catch (error) {
       throw new Error('좋아요 게시글 조회에 실패했습니다.');
     }

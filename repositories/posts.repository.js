@@ -1,4 +1,5 @@
 const { Posts, Likes } = require('../models');
+const sequelize = require('sequelize');
 
 class PostsRepository {
   createPost = async (UserId, nickname, title, content) => {
@@ -7,23 +8,22 @@ class PostsRepository {
 
   findAllPosts = async () => {
     const posts = await Posts.findAll({
-      attributes: ['postId', 'UserId', 'nickname', 'title', 'createdAt', 'updatedAt'],
+      attributes: [
+        'postId',
+        'UserId',
+        'nickname',
+        'title',
+        'createdAt',
+        'updatedAt',
+        [sequelize.literal('(SELECT COUNT(*) FROM Likes WHERE Likes.postId = Posts.postId)'), 'likes'],
+      ],
       order: [['createdAt', 'DESC']],
     });
-
-    const result = posts.map(async (post) => {
-      const likes = await Likes.findAll({ where: { PostId: post.postId } });
-      post.dataValues.likes = likes.length;
-      return post;
-    });
-    return result;
+    return posts;
   };
 
   getOnePost = async (postId) => {
     const post = await Posts.findOne({ where: { postId } });
-
-    const likes = await Likes.findAll({ where: { PostId: postId } });
-    post.dataValues.likes = likes.length;
     return post;
   };
 

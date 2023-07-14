@@ -10,8 +10,7 @@ class PostsService {
   findAllPosts = async () => {
     try {
       const posts = await this.postsRepository.findAllPosts();
-      const resolvedPosts = await Promise.all(posts);
-      return resolvedPosts;
+      return posts;
     } catch (error) {
       throw new Error('게시글 조회에 실패했습니다.');
     }

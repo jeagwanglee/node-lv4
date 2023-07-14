@@ -4,60 +4,39 @@ class PostsService {
   postsRepository = new PostsRepository();
 
   createPost = async (UserId, nickname, title, content) => {
+    if (!title || !content) throw { errorCode: 412, message: '데이터 형식이 올바르지 않습니다.' };
+
     await this.postsRepository.createPost(UserId, nickname, title, content);
   };
 
   findAllPosts = async () => {
-    try {
-      const posts = await this.postsRepository.findAllPosts();
-      return posts;
-    } catch (error) {
-      throw new Error('게시글 조회에 실패했습니다.');
-    }
+    const posts = await this.postsRepository.findAllPosts();
+    if (!posts) throw { errorCode: 404, message: '게시물이 존재하지 않습니다.' };
+
+    return posts;
   };
 
   getOnePost = async (postId) => {
-    try {
-      const post = await this.postsRepository.getOnePost(postId);
-      if (!post) {
-        return { status: 404, data: { errorMessage: '게시글 조회에 실패하였습니다.' } };
-      }
-      return { post };
-    } catch (error) {
-      throw new Error('게시글 조회에 실패했습니다.');
-    }
+    const post = await this.postsRepository.getOnePost(postId);
+    if (!post) throw { errorCode: 404, message: '게시물이 존재하지 않습니다.' };
+
+    return post;
   };
 
   updatePost = async (title, content, postId) => {
-    try {
-      const post = await this.postsRepository.getOnePost(postId);
+    const post = await this.postsRepository.getOnePost(postId);
 
-      if (!title || !content) {
-        return { status: 412, data: { errorMessage: '데이터 형식이 올바르지 않습니다.' } };
-      }
+    if (!title || !content) throw { errorCode: 412, message: '데이터 형식이 올바르지 않습니다.' };
+    if (!post) throw { errorCode: 404, message: '게시물이 존재하지 않습니다.' };
 
-      if (!post) {
-        return { status: 404, data: { errorMessage: '게시글 조회에 실패하였습니다.' } };
-      }
-      await this.postsRepository.updatePost(title, content, postId);
-      return { status: 200, data: { errorMessage: '게시글을 수정하였습니다.' } };
-    } catch (error) {
-      throw new Error('게시글 수정에 실패했습니다.');
-    }
+    await this.postsRepository.updatePost(title, content, postId);
   };
 
   deletePost = async (postId) => {
-    try {
-      const post = await this.postsRepository.getOnePost(postId);
+    const post = await this.postsRepository.getOnePost(postId);
+    if (!post) throw { errorCode: 404, message: '게시물이 존재하지 않습니다.' };
 
-      if (!post) {
-        return { status: 404, data: { errorMessage: '게시글 조회에 실패하였습니다.' } };
-      }
-      await this.postsRepository.deletePost(postId);
-      return { status: 200, data: { errorMessage: '게시글을 삭제하였습니다.' } };
-    } catch (error) {
-      throw new Error('게시글 삭제에 실패했습니다.');
-    }
+    await this.postsRepository.deletePost(postId);
   };
 }
 

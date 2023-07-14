@@ -7,10 +7,10 @@ const authRouter = require('./auth.route.js');
 const commentRouter = require('./comments.route.js');
 const likesRouter = require('./likes.route.js');
 
-router.use('/posts', postsRouter);
 router.use('/users', usersRouter);
 router.use('/auth', authRouter);
-router.use('/comments', commentRouter);
-router.use('/likes', likesRouter);
+router.use('/posts', likesRouter);
+router.use('/posts', postsRouter);
+router.use('/posts', commentRouter);
 
 module.exports = router;

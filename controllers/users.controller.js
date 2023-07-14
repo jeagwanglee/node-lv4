@@ -8,11 +8,12 @@ class UsersController {
     const { nickname, password, confirm } = req.body;
 
     try {
-      const { status, data } = await this.usersService.findOrCreateUser(nickname, password, confirm);
-      res.status(status).json(data);
-    } catch (error) {
-      res.status(400).json({ errorMessage: '회원가입에 실패했습니다.' });
-      // 이곳의 에러 코드는 400? 500?
+      await this.usersService.findOrCreateUser(nickname, password, confirm);
+      res.status(201).json({ message: '회원가입에 성공하였습니다.' });
+    } catch (e) {
+      if (e.errorCode) return res.status(e.errorCode).json(e.message);
+
+      res.status(500).json({ message: '회원가입에 실패했습니다.' });
     }
   };
 }

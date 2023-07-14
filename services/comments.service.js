@@ -8,19 +8,17 @@ class CommentsService {
   createComment = async (userId, postId, comment, nickname) => {
     try {
       const post = await this.postsRepository.getOnePost(postId);
-
       if (!post) {
-        return { status: 404, data: { errorMessage: '게시글 조회에 실패하였습니다.' } };
+        throw { errorCode: 404, message: '게시글이 존재하지 않습니다' };
       }
 
       if (!comment) {
-        return { status: 412, data: { errorMessage: '댓글 내용을 입력해주세요.' } };
+        throw { errorCode: 412, message: '댓글 내용을 입력해주세요.' };
       }
 
       await this.commentsRepository.createComment(userId, postId, comment, nickname);
-      return { status: 201, data: { message: '댓글을 작성하였습니다.' } };
     } catch (error) {
-      return { status: 400, data: { errorMessage: '댓글 작성에 실패했습니다.' } };
+      throw { errorCode: 400, message: '댓글 작성에 실패했습니다.' };
     }
   };
 
@@ -28,15 +26,14 @@ class CommentsService {
     try {
       const post = await this.postsRepository.getOnePost(postId);
 
-      if (!post) {
-        return { status: 404, data: { errorMessage: '게시글 조회에 실패하였습니다.' } };
-      }
+      if (!post) throw { errorCode: 404, message: '게시글이 존재하지 않습니다' };
 
       const comments = await this.commentsRepository.findComments(postId);
+      if (!comments) throw { errorCode: 404, message: '댓글이  존재하지 않습니다.' };
 
-      return { status: 200, data: { comments } };
+      return comments;
     } catch (error) {
-      return { status: 400, data: { errorMessage: '댓글 조회에 실패했습니다.' } };
+      throw { errorCode: 400, message: '댓글 조회에 실패했습니다.' };
     }
   };
 
@@ -46,22 +43,17 @@ class CommentsService {
       const post = await this.postsRepository.getOnePost(postId);
       const targetComment = await this.commentsRepository.findOneComment(commentId);
 
-      if (!post) {
-        return { status: 404, data: { errorMessage: '게시글 조회에 실패하였습니다.' } };
-      }
+      if (!post) throw { errorCode: 404, message: '게시글이  존재하지 않습니다.' };
 
-      if (!targetComment) {
-        return { status: 404, data: { errorMessage: '댓글 조회에 실패하였습니다.' } };
-      }
+      if (!targetComment) throw { errorCode: 404, message: '댓글이 존재하지 않습니다.' };
 
       if (userId !== targetComment.UserId) {
-        return { status: 403, data: { errorMessage: '댓글 수정 권한이 없습니다.' } };
+        throw { errorCode: 403, message: '댓글 수정 권한이 없습니다.' };
       }
 
       await this.commentsRepository.updateComment(commentId, comment);
-      return { status: 200, data: { message: '댓글을 수정하였습니다.' } };
     } catch (error) {
-      return { status: 400, data: { errorMessage: '댓글 수정에 실패했습니다.' } };
+      throw { errorCode: 400, message: '댓글 수정에 실패했습니다.' };
     }
   };
 
@@ -70,22 +62,17 @@ class CommentsService {
       const post = await this.postsRepository.getOnePost(postId);
       const targetComment = await this.commentsRepository.findOneComment(commentId);
 
-      if (!post) {
-        return { status: 404, data: { errorMessage: '게시글 조회에 실패하였습니다.' } };
-      }
+      if (!post) throw { errorCode: 404, message: '게시글이  존재하지 않습니다.' };
 
-      if (!targetComment) {
-        return { status: 404, data: { errorMessage: '댓글 조회에 실패하였습니다.' } };
-      }
+      if (!targetComment) throw { errorCode: 404, message: '댓글이 존재하지 않습니다.' };
 
       if (userId !== targetComment.UserId) {
-        return { status: 403, data: { errorMessage: '댓글 삭제 권한이 없습니다.' } };
+        throw { errorCode: 403, message: '댓글 삭제 권한이 없습니다.' };
       }
 
       await this.commentsRepository.deleteComment(commentId);
-      return { status: 200, data: { message: '댓글을 삭제하였습니다.' } };
     } catch (error) {
-      return { status: 400, data: { errorMessage: '댓글 삭제에 실패했습니다.' } };
+      throw { errorCode: 400, message: '댓글 삭제에 실패했습니다.' };
     }
   };
 }
